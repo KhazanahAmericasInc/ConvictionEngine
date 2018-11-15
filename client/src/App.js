@@ -59,6 +59,13 @@ class App extends Component {
     this.getCompanies();
   }
 
+  handleClaim = async() => {
+    const {accounts, contract} = this.state;
+    await contract.claim({from: accounts[0]});
+    this.getBalance();
+    this.getCompanies();
+  }
+
   handleNextStage = async(id) => {
     const {accounts, contract} = this.state;
     await contract.progressStage(id, {from: accounts[0]});
@@ -106,7 +113,8 @@ class App extends Component {
       <React.Fragment>
         <div className="jumbotron">
         <h2 className="text-center">Hello, {this.state.accounts[0]}</h2>
-        <h3 className="text-center">You have {this.state.tokens} KAI.</h3>
+        <h3 className="text-center">You have {this.state.tokens} KAI. <button className="btn btn-primary" onClick={this.handleClaim}>Claim</button></h3>
+        
         </div>
         <div className="container">
         <div className="row">

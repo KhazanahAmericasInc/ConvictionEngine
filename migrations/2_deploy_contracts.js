@@ -3,5 +3,5 @@ var CEngine = artifacts.require("./CEngine.sol");
 
 module.exports = function(deployer) {
   deployer.deploy(SimpleStorage);
-  deployer.deploy(CEngine,1500);
+  deployer.deploy(CEngine,0);
 };

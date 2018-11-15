@@ -27,8 +27,9 @@ export default class CompanyPanel extends Component {
             <label htmlFor="inputdefault">Add Conviction:</label>
             <input className="form-control" value={this.state.conviction_level} onChange={this.handleConvictionLevel} id="inputConviction" type="text"/>
             <br/>
-            <a className="btn btn-primary" onClick={onAddConviction.bind(this,this.state.conviction_level,company.company_id)}>Add Conviction</a>
-            <a className="btn btn-primary" onClick={onNext.bind(this,company.company_id)}>Next Stage</a>
+            <button className="btn btn-primary" onClick={onAddConviction.bind(this,this.state.conviction_level,company.company_id)}>Add Conviction</button>
+            <button className="btn btn-primary" onClick={onNext.bind(this,company.company_id)}>Next Stage</button>
+            
           </div>
         </div>
       </div>
