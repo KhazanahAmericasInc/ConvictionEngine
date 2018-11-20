@@ -28,7 +28,8 @@ export default class NewCompanyForm extends Component {
   render() {
     return (
       <div className="row">
-         <div className="col-md-6 col-md-offset-3">
+         <div className="col-md-12">
+         <h3>Add Company</h3>
          <form onSubmit={this.handleSubmit}>
           <div className="form-group">
             <label htmlFor="company-name">Company Name</label>

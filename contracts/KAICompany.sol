@@ -36,13 +36,9 @@ contract KAICompany {
         convictionList[tx.origin] += _amount;
     }
 
-    function nextStage() public {
+    function nextStage() public onlyOwner{
         require(uint(state) < uint(States.EXIT), "Company already at exit state.");
         state = States(uint(state) + 1);
-    }
-
-    function getConvictionList(address _address) public view returns (uint256) {
-        return convictionList[_address];
     }
 
 }
