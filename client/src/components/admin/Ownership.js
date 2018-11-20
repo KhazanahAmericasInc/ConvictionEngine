@@ -12,7 +12,7 @@ export default class Ownership extends Component {
     }
 
     handleAddress(event) {
-        this.setState({mint_kai: event.target.value});
+        this.setState({address: event.target.value});
     }
 
     handleSubmit(event) {

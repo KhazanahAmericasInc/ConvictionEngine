@@ -45,7 +45,7 @@ class App extends Component {
     const {accounts, contract} = this.state;
     var owner = await contract.contractOwner.call();
     console.log(owner);
-    this.setState({isOwner: (owner.toString().toLowerCase() == accounts[0].toString().toLowerCase() ? true : false)});
+    this.setState({isOwner: (owner.toString().toLowerCase() === accounts[0].toString().toLowerCase() ? true : false)});
   };
 
   getRank = async () => {
@@ -94,8 +94,6 @@ class App extends Component {
 
   handleSendKAI = async(address, amount) => {
     const {accounts, contract} = this.state;
-    console.log(address);
-    console.log(amount);
     await contract.transfer(address, amount, {from: accounts[0]});
     this.refreshStates();
   }
