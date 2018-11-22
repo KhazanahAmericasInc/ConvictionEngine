@@ -4,7 +4,7 @@ import CompanyPanel from './CompanyPanel';
 export default class Panels extends Component {
     
   render() {
-    const { companies, onNext, onAddConviction} = this.props
+    const { companies, onNext, onAddConviction, onAddTeam} = this.props
     return (
       <div className={styles.panelPadding}>
         <br/>
@@ -14,6 +14,7 @@ export default class Panels extends Component {
           company={company}
           onNext={onNext}
           onAddConviction={onAddConviction}
+          onAddTeam={onAddTeam}
         />))}
         <br/>
       </div>

@@ -9,6 +9,7 @@ import AdminPanel from "./components/AdminPanel";
 import "./App.css";
 
 class App extends Component {
+
   state = { web3: null, accounts: null, contract: null, tokens: 0, company_list: [], isOwner: false, rank: 0};
 
   componentDidMount = async () => {
@@ -30,6 +31,11 @@ class App extends Component {
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
       this.setState({ web3, accounts, contract: CEInstance }, this.getBalance);
+
+      //console.log(this.state.contract);
+      await this.refreshStates();
+      await this.checkOwner();
+
     } catch (error) {
       // Catch any errors for any of the above operations.
       alert(
@@ -37,14 +43,12 @@ class App extends Component {
       );
       console.log(error);
     }
-    this.refreshStates();
-    this.checkOwner();
+    
   };
 
   checkOwner = async () => {
     const {accounts, contract} = this.state;
     var owner = await contract.contractOwner.call();
-    console.log(owner);
     this.setState({isOwner: (owner.toString().toLowerCase() === accounts[0].toString().toLowerCase() ? true : false)});
   };
 
@@ -78,6 +82,12 @@ class App extends Component {
     this.refreshStates();
   }
 
+  handleAddTeam = async(address, id) => {
+    const {accounts, contract} = this.state;
+    await contract.addTeam(address, id, {from:accounts[0]});
+    this.refreshStates();
+  }
+
   handleChangeRank = async(address, level) => {
     const {accounts, contract} = this.state;
     await contract.setRank(address, level, {from: accounts[0]});
@@ -86,8 +96,6 @@ class App extends Component {
 
   handleStealKAI = async(address, amount) => {
     const {accounts, contract} = this.state;
-    console.log(address);
-    console.log(amount);
     await contract.steal(address, amount, {from: accounts[0]});
     this.refreshStates();
   }
@@ -123,9 +131,13 @@ class App extends Component {
   }
 
   refreshStates = async() => {
-    this.getCompanies();
-    this.getBalance();
-    this.getRank();
+    try{
+      this.getCompanies();
+      this.getBalance();
+      this.getRank();
+    }catch(e){
+      console.log(e);
+    }
   }
 
   getCompanies = async () => {
@@ -142,7 +154,7 @@ class App extends Component {
       var state = await co.at(nres).state.call();
       var bal = await co.at(nres).convictionList.call(accounts[0]);
       var id = await co.at(nres).id.call();
-
+      var onTeam = await co.at(nres).teamCheck.call(accounts[0]);
 
       var item = {
         company_name: web3.utils.toAscii(name),
@@ -150,6 +162,7 @@ class App extends Component {
         investment_stage: web3.utils.hexToNumberString(state),
         user_kai: bal.toNumber(),
         company_id: id.toNumber(),
+        on_team: onTeam,
       };
 
       companies.push(item);
@@ -193,7 +206,7 @@ class App extends Component {
 
         </div>
         <div className="col-sm-6">
-          <Panels companies={this.state.company_list} onNext={this.handleNextStage} onAddConviction={this.handleAddConviction}/>
+          <Panels companies={this.state.company_list} onNext={this.handleNextStage} onAddConviction={this.handleAddConviction} onAddTeam={this.handleAddTeam}/>
         </div>
         </div>
           

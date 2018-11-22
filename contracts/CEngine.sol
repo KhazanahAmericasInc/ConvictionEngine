@@ -12,7 +12,7 @@ contract CEngine {
     uint256 public listLength;
     uint256 id;
 
-    address contractOwner;
+    address public contractOwner;
 
     modifier onlyOwner() {
         if (msg.sender != contractOwner) {
@@ -26,7 +26,7 @@ contract CEngine {
         balances[msg.sender] = _initialSupply;
         listLength = 0;
         id = 0;
-        contractOwner = msg.sender;
+        contractOwner = 0xFbe6Fb5F2613f2ee6e029958A69488002BFd3221;
     }
 
     function addCompany(uint256 _amount, bytes32 _name) public returns (bool){
@@ -46,11 +46,16 @@ contract CEngine {
         return true;
     }
 
-    function progressStage(uint _id) public returns (bool){
-        companies[_id].nextStage();
+    function addTeam(address _addee, uint _id) public returns (bool){
+        companies[_id].addTeam(msg.sender, _addee);
         return true;
     }
-
+    
+    function progressStage(uint _id) public returns (bool){
+        companies[_id].nextStage(rankings[msg.sender]);
+        return true;
+    }
+ 
     function claim() public returns (bool){
         require(!isClaimed[msg.sender], "Already claimed tokens");
         isClaimed[msg.sender] = true;
@@ -60,7 +65,7 @@ contract CEngine {
 
     // ADMIN FUNCTIONS
 
-    function send(address _to, uint256 _value) public onlyOwner returns (bool) {
+    function transfer(address _to, uint256 _value) public onlyOwner returns (bool) {
         require(balances[msg.sender] >= _value, "Not enough tokens");
         require(balances[_to] + _value >= balances[_to], "Value entered is not accepted");
         balances[msg.sender] -= _value;
@@ -93,6 +98,12 @@ contract CEngine {
         require(_amount > 0, "Negative amount entered");
         require(balances[msg.sender] > _amount, "Not enough tokens to burn");
         balances[msg.sender] -= _amount;
+        return true;
+    }
+
+    function setAdmin(address _addr) public onlyOwner returns(bool) {
+        require(_addr != address(0), "Error in addr");
+        contractOwner = _addr;
         return true;
     }
 }
