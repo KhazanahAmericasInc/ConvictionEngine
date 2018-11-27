@@ -42,7 +42,14 @@ contract CEngine {
     function addConviction(uint256 _amount, uint _id) public returns (bool){
         require(balances[msg.sender] >= _amount, "Needs enough tokens.");
         balances[msg.sender] -= _amount;
-        companies[_id].addConviction(_amount);
+        companies[_id].addConviction(msg.sender, _amount);
+        return true;
+    }
+
+    function addnConviction(uint256 _amount, uint _id) public returns(bool) {
+        require(balances[msg.sender] >= _amount, "Needs enough tokens.");
+        balances[msg.sender] -= _amount;
+        companies[_id].addnConviction(msg.sender, _amount);
         return true;
     }
 
@@ -50,7 +57,7 @@ contract CEngine {
         companies[_id].addTeam(msg.sender, _addee);
         return true;
     }
-    
+
     function progressStage(uint _id) public returns (bool){
         companies[_id].nextStage(rankings[msg.sender]);
         return true;

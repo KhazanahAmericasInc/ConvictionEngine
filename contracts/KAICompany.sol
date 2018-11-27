@@ -6,8 +6,15 @@ contract KAICompany {
     address public initiator;
     address public contractInitiated;
 
+    mapping(address => bool) public onProject;
+
     // Conviction list for the company
     mapping(address => uint256) public convictionList;
+    uint256 public totalConviction;
+
+    // Negative Conviction List for the company
+    mapping(address => uint256) public nconvictionList;
+    uint256 public totalnConviction;
 
     // BD team
     mapping(address => bool) public teamCheck;
@@ -37,31 +44,43 @@ contract KAICompany {
     }
 
     constructor(uint256 _amount, bytes32 _name, address _from, uint256 _id) public {
-        address user = tx.origin;
 
         contractInitiated = msg.sender;
         initiator = _from;
         name = _name;
-        convictionList[user] = _amount;
+        convictionList[_from] = _amount;
+        totalConviction = _amount;
         state = States.ZERO;
         id = _id;
 
+        // Add user to the project
+        onProject[_from] = true;
+
         // Add user to the team
-        teamCheck[user] = true;
-        teamList.push(user);
+        teamCheck[_from] = true;
+        teamList.push(_from);
         teamListLength += 1;
     }
 
     function addTeam(address _adder, address _addee) public onlyOwner {
         require(teamCheck[_adder], "You must be on the team to add people to the team.");
+        onProject[_addee] = true;
         // User Management
         teamCheck[_addee] = true;
         teamList.push(_addee);
         teamListLength += 1;
     }
 
-    function addConviction(uint256 _amount) public onlyOwner {
-        convictionList[tx.origin] += _amount;
+    function addConviction(address _from, uint256 _amount) public onlyOwner {
+        require(teamCheck[_from],"must be on the team");
+        convictionList[_from] += _amount;
+        totalConviction += _amount;
+    }
+
+    function addnConviction(address _from, uint256 _amount) public onlyOwner {
+        require(teamCheck[_from],"must be on the team");
+        nconvictionList[_from] += _amount;
+        totalnConviction += _amount;
     }
 
     function nextStage(uint256 _rank) public onlyOwner{
@@ -70,6 +89,5 @@ contract KAICompany {
 
         state = States(uint(state) + 1);
     }
-
 }
 

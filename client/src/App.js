@@ -33,17 +33,16 @@ class App extends Component {
       this.setState({ web3, accounts, contract: CEInstance }, this.getBalance);
 
       //console.log(this.state.contract);
-      await this.refreshStates();
-      await this.checkOwner();
+      
 
     } catch (error) {
-      // Catch any errors for any of the above operations.
-      alert(
-        `Failed to load web3, accounts, or contract. Check console for details.`
-      );
-      console.log(error);
+
+
     }
-    
+    await this.refreshStates();
+    await this.checkOwner();    
+
+
   };
 
   checkOwner = async () => {
@@ -118,6 +117,12 @@ class App extends Component {
     this.refreshStates();
   }
 
+  handleAddnConviction = async(amount, id) => {
+    const {accounts, contract} = this.state;
+    await contract.addnConviction(amount, id, {from: accounts[0]});
+    this.refreshStates();
+  }
+
   handleClaim = async() => {
     const {accounts, contract} = this.state;
     await contract.claim({from: accounts[0]});
@@ -131,12 +136,14 @@ class App extends Component {
   }
 
   refreshStates = async() => {
-    try{
-      this.getCompanies();
-      this.getBalance();
-      this.getRank();
-    }catch(e){
-      console.log(e);
+    if(this.state.contract != null){
+      try{
+        this.getCompanies();
+        this.getBalance();
+        this.getRank();
+      }catch(e){
+        console.log(e);
+      }
     }
   }
 
@@ -155,6 +162,9 @@ class App extends Component {
       var bal = await co.at(nres).convictionList.call(accounts[0]);
       var id = await co.at(nres).id.call();
       var onTeam = await co.at(nres).teamCheck.call(accounts[0]);
+      var totalConviction = await co.at(nres).totalConviction.call();
+      var totalnConviction = await co.at(nres).totalnConviction.call();
+      var onProject = await co.at(nres).onProject.call(accounts[0]);
 
       var item = {
         company_name: web3.utils.toAscii(name),
@@ -163,6 +173,9 @@ class App extends Component {
         user_kai: bal.toNumber(),
         company_id: id.toNumber(),
         on_team: onTeam,
+        on_project: onProject,
+        total_conviction: totalConviction.toNumber(),
+        total_nconviction: totalnConviction.toNumber(),
       };
 
       companies.push(item);
@@ -206,7 +219,12 @@ class App extends Component {
 
         </div>
         <div className="col-sm-6">
-          <Panels companies={this.state.company_list} onNext={this.handleNextStage} onAddConviction={this.handleAddConviction} onAddTeam={this.handleAddTeam}/>
+          <Panels 
+          companies={this.state.company_list} 
+          onNext={this.handleNextStage} 
+          onAddConviction={this.handleAddConviction} 
+          onAddTeam={this.handleAddTeam}
+          onAddnConviction={this.handleAddnConviction}/>
         </div>
         </div>
           
