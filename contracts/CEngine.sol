@@ -29,10 +29,10 @@ contract CEngine {
         contractOwner = 0xFbe6Fb5F2613f2ee6e029958A69488002BFd3221;
     }
 
-    function addCompany(uint256 _amount, bytes32 _name) public returns (bool){
+    function addCompany(uint256 _amount, bytes32 _name) public onlyOwner returns (bool){
         require(balances[msg.sender] >= _amount, "Needs enough tokens.");
         balances[msg.sender] -= _amount;
-        KAICompany newCompany = new KAICompany(_amount, _name, msg.sender, id);
+        KAICompany newCompany = new KAICompany(_amount, _name, msg.sender, id, rankings[msg.sender]);
         companies.push(newCompany);
         id++;
         listLength++;
@@ -58,6 +58,16 @@ contract CEngine {
         return true;
     }
 
+    function hold(uint _id) public returns (bool){
+        companies[_id].hold(msg.sender);
+        return true;
+    }
+
+    function unhold(uint _id) public returns (bool){
+        companies[_id].unhold(msg.sender);
+        return true;
+    }
+
     function progressStage(uint _id) public returns (bool){
         companies[_id].nextStage(rankings[msg.sender]);
         return true;
@@ -67,6 +77,11 @@ contract CEngine {
         require(!isClaimed[msg.sender], "Already claimed tokens");
         isClaimed[msg.sender] = true;
         balances[msg.sender] += 10000;
+        return true;
+    }
+
+    function setHOD(address _hod, uint _id) public returns (bool) {
+        companies[_id].setHOD(msg.sender, _hod);
         return true;
     }
 

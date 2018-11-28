@@ -48,7 +48,7 @@ class App extends Component {
   checkOwner = async () => {
     const {accounts, contract} = this.state;
     var owner = await contract.contractOwner.call();
-    this.setState({isOwner: (owner.toString().toLowerCase() === accounts[0].toString().toLowerCase() ? true : false)});
+    this.setState({isOwner: (owner.toString().toLowerCase() === accounts[0].toString().toLowerCase())});
   };
 
   getRank = async () => {
@@ -78,6 +78,20 @@ class App extends Component {
   handleChangeAdmin = async(address) => {
     const {accounts, contract} = this.state;
     await contract.setAdmin(address, {from: accounts[0]});
+    this.refreshStates();
+  }
+
+  handleHold = async(id) => {
+    const {accounts, contract} = this.state;
+    console.log(id)
+    await contract.hold(id, {from:accounts[0]});
+    this.refreshStates();
+  }
+
+  handleunHold = async(id) => {
+    console.log(id)
+    const {accounts, contract} = this.state;
+    await contract.unhold(id, {from:accounts[0]});
     this.refreshStates();
   }
 
@@ -122,6 +136,12 @@ class App extends Component {
     await contract.addnConviction(amount, id, {from: accounts[0]});
     this.refreshStates();
   }
+  
+  handleSetHOD = async(address, id) => {
+    const {accounts, contract} = this.state;
+    await contract.setHOD(address, id, {from: accounts[0]});
+    this.refreshStates();
+  }
 
   handleClaim = async() => {
     const {accounts, contract} = this.state;
@@ -159,13 +179,18 @@ class App extends Component {
       co.setProvider(web3.currentProvider);
       var name = await co.at(nres).name.call();
       var state = await co.at(nres).state.call();
+      var heldState = await co.at(nres).heldState.call();
       var bal = await co.at(nres).convictionList.call(accounts[0]);
       var id = await co.at(nres).id.call();
       var onTeam = await co.at(nres).teamCheck.call(accounts[0]);
       var totalConviction = await co.at(nres).totalConviction.call();
       var totalnConviction = await co.at(nres).totalnConviction.call();
       var onProject = await co.at(nres).onProject.call(accounts[0]);
-
+      var onHold = await co.at(nres).onHold.call();
+      var HOD = await co.at(nres).HOD.call();
+      var onicTeam = await co.at(nres).icteamCheck.call(accounts[0]);
+      var isHODSet = await co.at(nres).isHODSet.call();
+      
       var item = {
         company_name: web3.utils.toAscii(name),
         company_address: nres, 
@@ -176,6 +201,12 @@ class App extends Component {
         on_project: onProject,
         total_conviction: totalConviction.toNumber(),
         total_nconviction: totalnConviction.toNumber(),
+        on_hold: onHold,
+        on_icTeam: onicTeam,
+        is_HOD: (HOD.toString().toLowerCase() === accounts[0].toString().toLowerCase()),
+        is_HOD_set: isHODSet,
+        state: state.toNumber(),
+        hold_state:heldState.toNumber(),
       };
 
       companies.push(item);
@@ -203,11 +234,10 @@ class App extends Component {
         <div className="col-sm">
           <h1>User Panel</h1>
           {!this.state.isOwner ? 
-          (<NewCompanyForm onAddCompany={this.handleAddCompany} />) : 
+          (null) : 
           (<React.Fragment>
-            <NewCompanyForm onAddCompany={this.handleAddCompany} />
-            <br/>
             <h1>Admin Panel</h1>
+            <NewCompanyForm onAddCompany={this.handleAddCompany} />
             <AdminPanel 
             onMintKAI={this.handleMintKAI} 
             onBurnKAI={this.handleBurnKAI} 
@@ -224,7 +254,10 @@ class App extends Component {
           onNext={this.handleNextStage} 
           onAddConviction={this.handleAddConviction} 
           onAddTeam={this.handleAddTeam}
-          onAddnConviction={this.handleAddnConviction}/>
+          onAddnConviction={this.handleAddnConviction}
+          onHold={this.handleHold}
+          onunHold={this.handleunHold}
+          onSetHOD={this.handleSetHOD}/>
         </div>
         </div>
           

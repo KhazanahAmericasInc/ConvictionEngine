@@ -23,6 +23,7 @@ contract KAICompany {
 
     // HOD address
     address public HOD;
+    bool public isHODSet;
 
     // IC team
     mapping(address => bool) public icteamCheck;
@@ -30,8 +31,12 @@ contract KAICompany {
     uint256 public icteamListLength;
 
     // Investment stages
-    enum States { ZERO, ONE, TWO, THREE, FOUR, EXIT }
+    enum States { ZERO, ONE, TWO, THREE, FOUR, EXIT, HOLD }
     States public state;
+    bool public onHold;
+
+    // HOLD state
+    States public heldState;
 
     uint256 public id;
 
@@ -43,8 +48,7 @@ contract KAICompany {
         _; // continue executing rest of method body
     }
 
-    constructor(uint256 _amount, bytes32 _name, address _from, uint256 _id) public {
-
+    constructor(uint256 _amount, bytes32 _name, address _from, uint256 _id, uint256 _rank) public {
         contractInitiated = msg.sender;
         initiator = _from;
         name = _name;
@@ -72,15 +76,46 @@ contract KAICompany {
     }
 
     function addConviction(address _from, uint256 _amount) public onlyOwner {
-        require(teamCheck[_from],"must be on the team");
-        convictionList[_from] += _amount;
-        totalConviction += _amount;
+        require(teamCheck[_from] && (uint(state) == 0 || uint(state) == 4),"must be on the team");
+
+        if(teamCheck[_from] && (uint(state) == 0 || uint(state) == 1 || uint(state) == 4)){
+            convictionList[_from] += _amount;
+            totalConviction += _amount;
+        }else if(_from == HOD && uint(state) == 2){
+            convictionList[_from] += _amount;
+            totalConviction += _amount;
+        }else if (icteamCheck[_from] && uint(state) == 3){
+            convictionList[_from] += _amount;
+            totalConviction += _amount;
+        }else{
+            revert("undefined rule");
+        }
     }
 
     function addnConviction(address _from, uint256 _amount) public onlyOwner {
         require(teamCheck[_from],"must be on the team");
         nconvictionList[_from] += _amount;
         totalnConviction += _amount;
+    }
+
+    function setHOD(address _from, address _hod) public onlyOwner{
+        require(!isHODSet && onProject[_from], "HOD already set");
+        onProject[_hod] = true;
+        HOD = _hod;
+        isHODSet = true;
+    }
+
+    function unhold(address _from) public onlyOwner {
+        require(onProject[_from] && state == States.HOLD, "not on team");
+        onHold = false;
+        state = States(uint(heldState));
+    }
+
+    function hold(address _from) public onlyOwner {
+        require(onProject[_from] && state != States.HOLD, "must be on team");
+        onHold = true;
+        heldState = state;
+        state = States.HOLD;
     }
 
     function nextStage(uint256 _rank) public onlyOwner{
