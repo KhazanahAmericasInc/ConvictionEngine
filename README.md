@@ -27,25 +27,29 @@ There are many editors that have solidity packages to show syntax highlighting, 
 
 
 #### Deployment to the Local Blockchain Environment (truffle develop)
+On the truffle develop CLI:
+
 1. Compile your solidity smart-contracts:
 ```
-compile
+$compile
 ```
 
 2. Migrate your solidity smart-contracts (reset flag may be necessary):
 ```
-migrate --reset
+$migrate --reset
 ```
 
 #### Deployment to the Public Testnet (rinkeby testnet)
+On the truffle develop CLI:
+
 1. Compile your solidity smart-contracts:
 ```
-compile
+$compile
 ```
 
 2. Migrate your solidity smart-contracts via Infura (cloud provider to Ethereum nodes) to the testnet 
 ```
-migrate --network rinkebyInfura
+$migrate --network rinkebyInfura
 ```
 
 ### Part 2: Front-end
