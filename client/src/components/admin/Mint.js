@@ -23,7 +23,7 @@ export default class Mint extends Component {
   render() {
     return (
         <React.Fragment>
-        <h3>Mint KAI</h3>
+        <h3>Mint KAI Tokens</h3>
         <form onSubmit={this.handleSubmit}>
           <div className="form-group">
             <label>Mint Amount</label>

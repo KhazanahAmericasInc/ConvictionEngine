@@ -69,7 +69,7 @@ contract CEngine {
     }
 
     function progressStage(uint _id) public returns (bool){
-        companies[_id].nextStage(rankings[msg.sender]);
+        companies[_id].nextStage(msg.sender);
         return true;
     }
  

@@ -31,7 +31,7 @@ contract KAICompany {
     uint256 public icteamListLength;
 
     // Investment stages
-    enum States { ZERO, ONE, TWO, THREE, FOUR, EXIT, HOLD }
+    enum States { ZERO, ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EXIT, HOLD }
     States public state;
     bool public onHold;
 
@@ -78,7 +78,7 @@ contract KAICompany {
     function addConviction(address _from, uint256 _amount) public onlyOwner {
         require(teamCheck[_from] && (uint(state) == 0 || uint(state) == 4),"must be on the team");
 
-        if(teamCheck[_from] && (uint(state) == 0 || uint(state) == 1 || uint(state) == 4)){
+        if(teamCheck[_from] && (uint(state) == 0 || uint(state) == 1 || uint(state) == 4 || uint(state) == 7)){
             convictionList[_from] += _amount;
             totalConviction += _amount;
         }else if(_from == HOD && uint(state) == 2){
@@ -118,11 +118,18 @@ contract KAICompany {
         state = States.HOLD;
     }
 
-    function nextStage(uint256 _rank) public onlyOwner{
+    function nextStage(address _from) public onlyOwner{
         require(uint(state) < uint(States.EXIT), "Company already at exit state.");
-        require(_rank > 0, "Undefined rank");
-
-        state = States(uint(state) + 1);
+        
+        if(teamCheck[_from] && (uint(state) == 0 || uint(state) == 1 || uint(state) == 4 || uint(state) == 7)){
+            state = States(uint(state) + 1);
+        }else if(_from == HOD && uint(state) == 2) {
+            state = States(uint(state) + 1);
+        }else if(icteamCheck[_from] && uint(state) == 3) {
+            state = States(uint(state) + 1);
+        }else{
+            revert("undefined rule");
+        }
     }
 }
 

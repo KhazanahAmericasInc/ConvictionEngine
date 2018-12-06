@@ -28,7 +28,7 @@ export default class Send extends Component {
   render() {
     return (
         <React.Fragment>
-        <h3>Send KAI</h3>
+        <h3>Send KAI Tokens</h3>
         <form onSubmit={this.handleSubmit}>
           <div className="form-group">
             <label>Address</label>

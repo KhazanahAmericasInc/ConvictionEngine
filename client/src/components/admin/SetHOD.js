@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-export default class Steal extends Component {
+export default class SetHOD extends Component {
 
     constructor(props) {
         super(props);
@@ -21,22 +21,22 @@ export default class Steal extends Component {
     }
 
     handleSubmit(event) {
-        this.props.onStealKAI(this.state.address, this.state.amount);
+        this.props.onSetHOD(this.state.address, this.state.amount);
         event.preventDefault();
     }
     
   render() {
     return (
         <React.Fragment>
-        <h3>Steal KAI Tokens</h3>
+        <h3>Set Project HOD</h3>
         <form onSubmit={this.handleSubmit}>
           <div className="form-group">
-            <label>Address</label>
-            <input type="text" onChange={this.handleAddress}  className="form-control" id="inputAddress" placeholder="Enter address"/>
+            <label>HOD Address</label>
+            <input type="text" onChange={this.handleAmount} className="form-control" id="inputAmount" placeholder="Enter HOD address"/>
           </div>
           <div className="form-group">
-            <label>Steal Amount</label>
-            <input type="text" onChange={this.handleAmount} className="form-control" id="inputAmount" placeholder="Enter amount of KAI to steal"/>
+            <label>Project Number</label>
+            <input type="text" onChange={this.handleAddress}  className="form-control" id="inputAddress" placeholder="Enter project number"/>
           </div>
           <button type="submit" className="btn btn-primary">Steal KAI</button>
         </form>

@@ -23,7 +23,7 @@ export default class Ownership extends Component {
   render() {
     return (
         <React.Fragment>
-        <h3>Transfer Admin</h3>
+        <h3>Transfer Admin Rights</h3>
         <form onSubmit={this.handleSubmit}>
           <div className="form-group">
             <label>Address</label>

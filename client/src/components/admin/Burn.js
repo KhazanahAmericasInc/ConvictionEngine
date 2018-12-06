@@ -23,7 +23,7 @@ export default class Burn extends Component {
   render() {
     return (
         <React.Fragment>
-        <h3>Burn KAI</h3>
+        <h3>Burn KAI Tokens</h3>
         <form onSubmit={this.handleSubmit}>
           <div className="form-group">
             <label>Burn Amount</label>

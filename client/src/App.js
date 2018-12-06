@@ -10,14 +10,23 @@ import "./App.css";
 
 class App extends Component {
 
-  state = { web3: null, accounts: null, contract: null, tokens: 0, company_list: [], isOwner: false, rank: 0};
+  
+  
+  constructor(props) {
+    super(props);
+
+
+    this.state = { web3: null, accounts: null, contract: null, tokens: 0, company_list: [], isOwner: false, rank: 0, search: ''};
+    
+    this.handleSearchValue = this.handleSearchValue.bind(this);
+  }
 
   componentDidMount = async () => {
     try {
       // Get network provider and web3 instance.
       const web3 = await getWeb3();
 
-      // Use web3 to get the user's accounts.
+      // Use web3 to get the user's accounts.d
       const accounts = await web3.eth.getAccounts();
 
       // Get the contract instance.
@@ -83,13 +92,11 @@ class App extends Component {
 
   handleHold = async(id) => {
     const {accounts, contract} = this.state;
-    console.log(id)
     await contract.hold(id, {from:accounts[0]});
     this.refreshStates();
   }
 
   handleunHold = async(id) => {
-    console.log(id)
     const {accounts, contract} = this.state;
     await contract.unhold(id, {from:accounts[0]});
     this.refreshStates();
@@ -177,25 +184,28 @@ class App extends Component {
       var nres = await contract.companies.call(i);
       const co = truffleContract(KAICompany);
       co.setProvider(web3.currentProvider);
-      var name = await co.at(nres).name.call();
-      var state = await co.at(nres).state.call();
-      var heldState = await co.at(nres).heldState.call();
-      var bal = await co.at(nres).convictionList.call(accounts[0]);
-      var id = await co.at(nres).id.call();
-      var onTeam = await co.at(nres).teamCheck.call(accounts[0]);
-      var totalConviction = await co.at(nres).totalConviction.call();
-      var totalnConviction = await co.at(nres).totalnConviction.call();
-      var onProject = await co.at(nres).onProject.call(accounts[0]);
-      var onHold = await co.at(nres).onHold.call();
-      var HOD = await co.at(nres).HOD.call();
-      var onicTeam = await co.at(nres).icteamCheck.call(accounts[0]);
-      var isHODSet = await co.at(nres).isHODSet.call();
-      
+
+      var id                 = await co.at(nres).id.call();
+      var HOD                = await co.at(nres).HOD.call();
+      var name               = await co.at(nres).name.call();
+      var state              = await co.at(nres).state.call();
+      var onHold             = await co.at(nres).onHold.call();
+      var isHODSet           = await co.at(nres).isHODSet.call();
+      var heldState          = await co.at(nres).heldState.call();
+      var totalConviction    = await co.at(nres).totalConviction.call();
+      var totalnConviction   = await co.at(nres).totalnConviction.call();
+      var onTeam             = await co.at(nres).teamCheck.call(accounts[0]);
+      var onProject          = await co.at(nres).onProject.call(accounts[0]);
+      var onicTeam           = await co.at(nres).icteamCheck.call(accounts[0]);
+      var bal                = await co.at(nres).convictionList.call(accounts[0]);
+      var nbal               = await co.at(nres).nconvictionList.call(accounts[0]);
+
       var item = {
         company_name: web3.utils.toAscii(name),
         company_address: nres, 
         investment_stage: web3.utils.hexToNumberString(state),
         user_kai: bal.toNumber(),
+        user_nkai: nbal.toNumber(),
         company_id: id.toNumber(),
         on_team: onTeam,
         on_project: onProject,
@@ -215,6 +225,10 @@ class App extends Component {
     this.setState({company_list: companies})
   }
 
+  handleSearchValue(event) {
+    this.setState({search: event.target.value});
+  }
+
 
   render() {
     if (!this.state.web3) {
@@ -222,35 +236,46 @@ class App extends Component {
         <span className="badge m-2 badge-warning">Loading Web3, accounts, and contracts...</span>
       </div>;
     }
+
     return (
       <React.Fragment>
         <div className="jumbotron">
           <h2 className="text-center">Hello, {this.state.accounts[0]}</h2>
-          <h3 className="text-center">You have {this.state.tokens} KAI. <button className="btn btn-primary" onClick={this.handleClaim}>Claim</button></h3>
+          <h3 className="text-center">You have {this.state.tokens} <img src={require("./kai.png")} className="kaicoin"/>&nbsp;KAI Tokens <button className="btn btn-primary" onClick={this.handleClaim}>Claim</button></h3>
           <h3 className="text-center">Your rank is currently at level {this.state.rank}</h3>
         </div>
         <div className="container">
         <div className="row">
+
+
         <div className="col-sm">
           <h1>User Panel</h1>
           {!this.state.isOwner ? 
           (null) : 
           (<React.Fragment>
             <h1>Admin Panel</h1>
-            <NewCompanyForm onAddCompany={this.handleAddCompany} />
+            <NewCompanyForm onAddCompany={this.handleAddCompany} /> <br/>
             <AdminPanel 
             onMintKAI={this.handleMintKAI} 
             onBurnKAI={this.handleBurnKAI} 
             onChangeRank={this.handleChangeRank} 
             onStealKAI={this.handleStealKAI} 
             onSendKAI={this.handleSendKAI}
-            onSetAdmin={this.handleChangeAdmin}/>
+            onSetAdmin={this.handleChangeAdmin}
+            onSetHOD={this.handleSetHOD}/>
           </React.Fragment>)}
-
         </div>
+
+
         <div className="col-sm-6">
+          <h1>Companies</h1>
+          <br/>
+          <div className="form-group">
+            <input type="text" className="form-control" value={this.state.search} onChange={this.handleSearchValue} placeholder="Search for a company"/>
+          </div>
           <Panels 
           companies={this.state.company_list} 
+          search={this.state.search}
           onNext={this.handleNextStage} 
           onAddConviction={this.handleAddConviction} 
           onAddTeam={this.handleAddTeam}

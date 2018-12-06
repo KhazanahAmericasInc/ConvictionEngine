@@ -24,33 +24,60 @@ export default class CompanyPanel extends Component {
     this.setState({HODAddr: event.target.value});
   }
 
+  validSet(onTeam, isHOD, onicTeam, state){
+    return (onTeam && (state == 0 || state == 1 || state == 4 || state == 7))
+          || (isHOD && (state == 2))
+          || (onicTeam && (state == 3 || state == 5));
+  }
+
   render() {
+    const investmentStates = {0: 'BD Approval', 1: 'KAI Approval', 2: 'HOD Approval', 3: 'Intro IC1', 4: 'KAI Approval', 5: 'IC2', 6: 'Awaiting Funds', 7: 'Waiting Exit', 8: 'Exited'};
     const {company, onNext, onAddConviction, onAddTeam, onAddnConviction, onunHold, onHold, onSetHOD} = this.props;
     return (
       <div className="card">
-        <div className="card-body">
-          <h5 className="card-title">#{company.company_id} {company.company_name} &nbsp;
-          <span className="badge badge-success center">+{company.total_conviction}</span> &nbsp;
-          <span className="badge badge-danger">-{company.total_nconviction}</span>
-          </h5>
+        <ul className="list-group list-group-flush">
+          <li className="list-group-item">
+          <h5 className="card-title">#{company.company_id} {company.company_name} &nbsp; </h5>
           <h6 className="card-subtitle mb-2 text-muted">{company.company_address}</h6>
-          
+          <p>
+            Total KAI: &nbsp; 
+            <span className="badge badge-success">+{company.total_conviction}</span> &nbsp;
+            <span className="badge badge-danger">-{company.total_nconviction}</span>
+          </p>
+          </li>
           {company.on_project ? (
           
           <React.Fragment>
+            <li className="list-group-item">
+            <p className="card-text">Investment Stage: &nbsp;
+              <span className="badge badge-primary">
+                {company.on_hold ? investmentStates[company.hold_state]:investmentStates[company.investment_stage]}
+              </span>
+            </p>
+            <p className="card-text">Your KAI Invested: &nbsp;
+            <span className="badge badge-success">+{company.user_kai}</span> &nbsp;
+            <span className="badge badge-danger">-{company.user_nkai}</span>
+            {!company.on_hold ? null : (<React.Fragment>(ON HOLD)</React.Fragment>)}</p>
+            </li>
             
-            <p className="card-text">Investment Stage: {company.on_hold ? company.hold_state:company.investment_stage}</p>
-            <p className="card-text">Your KAI Invested: {company.user_kai} {!company.on_hold ? null : (<React.Fragment>(ON HOLD)</React.Fragment>)}</p>
 
+            
             {!company.on_hold ? ( <React.Fragment>
+            <li className="list-group-item">
+            <label>Actions Available:</label>
             <div className="form-group">
-              <button className="btn btn-primary" onClick={onNext.bind(this,company.company_id)}>Next Stage</button>&nbsp;
+            {this.validSet(company.on_team, company.is_HOD, company.on_icTeam, company.state) ? 
+            (
+              <button className="btn btn-primary" onClick={onNext.bind(this,company.company_id)}>Next Stage</button> 
+            ): null}
+            &nbsp;
               <button className="btn btn-primary" onClick={onHold.bind(this,company.company_id)}>Hold Project</button>
             </div>
+            </li>
+            
 
-            {(company.on_team && (company.state == 0 || company.state == 1 || company.state == 4))
-            ||(company.is_HOD && (company.state == 2))
-            ||(company.on_icTeam && (company.state == 3 || company.state == 5)) ? 
+            <li className="list-group-item">
+            {this.validSet(company.on_team, company.is_HOD, company.on_icTeam, company.state) ? 
             (<div className="form-group">
               <label htmlFor="inputdefault">Add Conviction:</label>
               <input className="form-control" value={this.state.conviction_level} onChange={this.handleConvictionLevel} id="inputConviction" type="text"/>
@@ -59,31 +86,24 @@ export default class CompanyPanel extends Component {
               <button className="btn btn-primary" onClick={onAddnConviction.bind(this, this.state.conviction_level, company.company_id)}>Add N-Conviction</button>
             </div>)
             : null}
+            </li>
 
-            {!company.is_HOD_set ? (
-            <div className="form-group">
-              <label>Set HOD:</label>
-              <input className="form-control" value={this.state.HODAddr} onChange={this.handleHODAddr}/>
-              <br/>
-              <button className="btn btn-primary" onClick={onSetHOD.bind(this, this.state.HODAddr, company.company_id)}>Set HOD</button>
-            </div>)
-            :null}
 
+            <li className="list-group-item">
             {company.on_team ? 
             (<React.Fragment>
-            <div className="form-group">
-              <label>Add Team:</label>
+            <label>Add Team Member:</label>
+            <div className="form-inline">
               <input className="form-control" value={this.state.add_member} onChange={this.handleAddMember}/>
               <br/>
               <button className="btn btn-primary" onClick={onAddTeam.bind(this, this.state.add_member, company.company_id)}>Add Team Member</button>
             </div>
             </React.Fragment>):null}
+            </li>
           </React.Fragment>) :  <button className="btn btn-primary" onClick={onunHold.bind(this, company.company_id)}>Unhold Project</button>} </React.Fragment> ): 
          null}          
-
           
-          
-        </div>
+        </ul>
       </div>
     )
   }

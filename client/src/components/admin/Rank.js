@@ -28,7 +28,7 @@ export default class Rank extends Component {
   render() {
     return (
         <React.Fragment>
-        <h3>Change Rank</h3>
+        <h3>Change User Rank</h3>
         <form onSubmit={this.handleSubmit}>
           <div className="form-group">
             <label>Address</label>
