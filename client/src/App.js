@@ -9,15 +9,20 @@ import AdminPanel from "./components/AdminPanel";
 import "./App.css";
 
 class App extends Component {
-
-  
-  
   constructor(props) {
     super(props);
 
+    this.state = {
+      web3: null,
+      accounts: null,
+      contract: null,
+      tokens: 0,
+      company_list: [],
+      isOwner: false,
+      rank: 0,
+      search: ""
+    };
 
-    this.state = { web3: null, accounts: null, contract: null, tokens: 0, company_list: [], isOwner: false, rank: 0, search: ''};
-    
     this.handleSearchValue = this.handleSearchValue.bind(this);
   }
 
@@ -42,167 +47,185 @@ class App extends Component {
       this.setState({ web3, accounts, contract: CEInstance }, this.getBalance);
 
       //console.log(this.state.contract);
-      
-
-    } catch (error) {
-
-
-    }
+    } catch (error) {}
     await this.refreshStates();
-    await this.checkOwner();    
-
-
+    await this.checkOwner();
   };
 
+  // Checks whether the user is the 'admin' of the smart contracts (or isOwner)
   checkOwner = async () => {
-    const {accounts, contract} = this.state;
+    const { accounts, contract } = this.state;
     var owner = await contract.contractOwner.call();
-    this.setState({isOwner: (owner.toString().toLowerCase() === accounts[0].toString().toLowerCase())});
+    this.setState({
+      isOwner:
+        owner.toString().toLowerCase() === accounts[0].toString().toLowerCase()
+    });
   };
 
+  // Gets the rank of the user from the smart contracts
   getRank = async () => {
-    const {accounts, contract} = this.state;
+    const { accounts, contract } = this.state;
     var rank = await contract.rankings.call(accounts[0]);
-    this.setState({rank: rank.toNumber()});
-  }
+    this.setState({ rank: rank.toNumber() });
+  };
 
+  // Gets the current KAI token balance of the user
   getBalance = async () => {
     const { accounts, contract } = this.state;
     var balance = await contract.balances.call(accounts[0]);
-    this.setState({tokens: balance.toNumber()});
+    this.setState({ tokens: balance.toNumber() });
   };
 
-  handleMintKAI = async(amount) => {
-    const {accounts, contract} = this.state;
-    await contract.mint(amount, {from: accounts[0]});
+  // Function call to smart contract to mint KAI
+  handleMintKAI = async amount => {
+    const { accounts, contract } = this.state;
+    await contract.mint(amount, { from: accounts[0] });
     this.refreshStates();
-  }
+  };
 
-  handleBurnKAI = async(amount) => {
-    const {accounts, contract} = this.state;
-    await contract.burn(amount, {from: accounts[0]});
+  // Function call to smart contract to burn KAI
+  handleBurnKAI = async amount => {
+    const { accounts, contract } = this.state;
+    await contract.burn(amount, { from: accounts[0] });
     this.refreshStates();
-  }
+  };
 
-  handleChangeAdmin = async(address) => {
-    const {accounts, contract} = this.state;
-    await contract.setAdmin(address, {from: accounts[0]});
+  // Function call to smart contract to change admin
+  handleChangeAdmin = async address => {
+    const { accounts, contract } = this.state;
+    await contract.setAdmin(address, { from: accounts[0] });
     this.refreshStates();
-  }
+  };
 
-  handleHold = async(id) => {
-    const {accounts, contract} = this.state;
-    await contract.hold(id, {from:accounts[0]});
+  // Function call to smart contract to hold a project
+  handleHold = async id => {
+    const { accounts, contract } = this.state;
+    await contract.hold(id, { from: accounts[0] });
     this.refreshStates();
-  }
+  };
 
-  handleunHold = async(id) => {
-    const {accounts, contract} = this.state;
-    await contract.unhold(id, {from:accounts[0]});
+  // Function call to smart contract to unhold a project
+  handleunHold = async id => {
+    const { accounts, contract } = this.state;
+    await contract.unhold(id, { from: accounts[0] });
     this.refreshStates();
-  }
+  };
 
-  handleAddTeam = async(address, id) => {
-    const {accounts, contract} = this.state;
-    await contract.addTeam(address, id, {from:accounts[0]});
+  // Function call to smart contract to add a team member
+  handleAddTeam = async (address, id) => {
+    const { accounts, contract } = this.state;
+    await contract.addTeam(address, id, { from: accounts[0] });
     this.refreshStates();
-  }
+  };
 
-  handleChangeRank = async(address, level) => {
-    const {accounts, contract} = this.state;
-    await contract.setRank(address, level, {from: accounts[0]});
+  // Function call to smart contract to change user rank
+  handleChangeRank = async (address, level) => {
+    const { accounts, contract } = this.state;
+    await contract.setRank(address, level, { from: accounts[0] });
     this.refreshStates();
-  }
+  };
 
-  handleStealKAI = async(address, amount) => {
-    const {accounts, contract} = this.state;
-    await contract.steal(address, amount, {from: accounts[0]});
+  // Function call to smart contract to steak KAI tokens from another user
+  handleStealKAI = async (address, amount) => {
+    const { accounts, contract } = this.state;
+    await contract.steal(address, amount, { from: accounts[0] });
     this.refreshStates();
-  }
+  };
 
-  handleSendKAI = async(address, amount) => {
-    const {accounts, contract} = this.state;
-    await contract.transfer(address, amount, {from: accounts[0]});
+  // Function call to smart contract to send KAI tokens to another user
+  handleSendKAI = async (address, amount) => {
+    const { accounts, contract } = this.state;
+    await contract.transfer(address, amount, { from: accounts[0] });
     this.refreshStates();
-  }
+  };
 
+  // Function call to smart contract to add a company to the pipeline
   handleAddCompany = async (amount, name) => {
     const { accounts, contract } = this.state;
-    await contract.addCompany(amount, name, {from: accounts[0]});
+    await contract.addCompany(amount, name, { from: accounts[0] });
     this.refreshStates();
-  }
+  };
 
-  handleAddConviction = async(amount, id) => {
-    const {accounts, contract} = this.state;
-    await contract.addConviction(amount, id, {from: accounts[0]});
+  // Function call to smart contract to add conviction tokens to a project
+  handleAddConviction = async (amount, id) => {
+    const { accounts, contract } = this.state;
+    await contract.addConviction(amount, id, { from: accounts[0] });
     this.refreshStates();
-  }
+  };
 
-  handleAddnConviction = async(amount, id) => {
-    const {accounts, contract} = this.state;
-    await contract.addnConviction(amount, id, {from: accounts[0]});
+  // Function call to smart contract to add negative conviction tokens to a project
+  handleAddnConviction = async (amount, id) => {
+    const { accounts, contract } = this.state;
+    await contract.addnConviction(amount, id, { from: accounts[0] });
     this.refreshStates();
-  }
-  
-  handleSetHOD = async(address, id) => {
-    const {accounts, contract} = this.state;
-    await contract.setHOD(address, id, {from: accounts[0]});
-    this.refreshStates();
-  }
+  };
 
-  handleClaim = async() => {
-    const {accounts, contract} = this.state;
-    await contract.claim({from: accounts[0]});
+  // Function call to smart contract to set HOD of a specific project
+  handleSetHOD = async (address, id) => {
+    const { accounts, contract } = this.state;
+    await contract.setHOD(address, id, { from: accounts[0] });
     this.refreshStates();
-  }
+  };
 
-  handleNextStage = async(id) => {
-    const {accounts, contract} = this.state;
-    await contract.progressStage(id, {from: accounts[0]});
+  // Function call to smart contract to handle claim functionality (e.g. distributing tokens at the beginning of the yr)
+  handleClaim = async () => {
+    const { accounts, contract } = this.state;
+    await contract.claim({ from: accounts[0] });
     this.refreshStates();
-  }
+  };
 
-  refreshStates = async() => {
-    if(this.state.contract != null){
-      try{
+  // Function call to smart contract to handle moving the project stage to the next stage
+  handleNextStage = async id => {
+    const { accounts, contract } = this.state;
+    await contract.progressStage(id, { from: accounts[0] });
+    this.refreshStates();
+  };
+
+  // Refreshes react state with new backend info
+  refreshStates = async () => {
+    if (this.state.contract != null) {
+      try {
         this.getCompanies();
         this.getBalance();
         this.getRank();
-      }catch(e){
+      } catch (e) {
         console.log(e);
       }
     }
-  }
+  };
 
+  // retreives all company information
   getCompanies = async () => {
-    const {web3, accounts, contract} = this.state;
+    const { web3, accounts, contract } = this.state;
     var res = await contract.listLength.call();
-
     var companies = [];
 
-    for(var i = 0; i < res.toNumber(); i++){
+    // loops through all companies locally to retrieve needed data.
+    // (looping is inefficient on Smart contracts themselves, and is a bad practice to be placed on the smart contracts. Thus this is done on the front-end)
+    for (var i = 0; i < res.toNumber(); i++) {
       var nres = await contract.companies.call(i);
       const co = truffleContract(KAICompany);
       co.setProvider(web3.currentProvider);
 
-      var id                 = await co.at(nres).id.call();
-      var HOD                = await co.at(nres).HOD.call();
-      var name               = await co.at(nres).name.call();
-      var state              = await co.at(nres).state.call();
-      var onHold             = await co.at(nres).onHold.call();
-      var isHODSet           = await co.at(nres).isHODSet.call();
-      var heldState          = await co.at(nres).heldState.call();
-      var totalConviction    = await co.at(nres).totalConviction.call();
-      var totalnConviction   = await co.at(nres).totalnConviction.call();
-      var onTeam             = await co.at(nres).teamCheck.call(accounts[0]);
-      var onProject          = await co.at(nres).onProject.call(accounts[0]);
-      var onicTeam           = await co.at(nres).icteamCheck.call(accounts[0]);
-      var bal                = await co.at(nres).convictionList.call(accounts[0]);
-      var nbal               = await co.at(nres).nconvictionList.call(accounts[0]);
+      // these could be promises instead of async to remove development error warnings
+      var id = await co.at(nres).id.call();
+      var HOD = await co.at(nres).HOD.call();
+      var name = await co.at(nres).name.call();
+      var state = await co.at(nres).state.call();
+      var onHold = await co.at(nres).onHold.call();
+      var isHODSet = await co.at(nres).isHODSet.call();
+      var heldState = await co.at(nres).heldState.call();
+      var totalConviction = await co.at(nres).totalConviction.call();
+      var totalnConviction = await co.at(nres).totalnConviction.call();
+      var onTeam = await co.at(nres).teamCheck.call(accounts[0]);
+      var onProject = await co.at(nres).onProject.call(accounts[0]);
+      var onicTeam = await co.at(nres).icteamCheck.call(accounts[0]);
+      var bal = await co.at(nres).convictionList.call(accounts[0]);
+      var nbal = await co.at(nres).nconvictionList.call(accounts[0]);
 
       var item = {
         company_name: web3.utils.toAscii(name),
-        company_address: nres, 
+        company_address: nres,
         investment_stage: web3.utils.hexToNumberString(state),
         user_kai: bal.toNumber(),
         user_nkai: nbal.toNumber(),
@@ -213,82 +236,99 @@ class App extends Component {
         total_nconviction: totalnConviction.toNumber(),
         on_hold: onHold,
         on_icTeam: onicTeam,
-        is_HOD: (HOD.toString().toLowerCase() === accounts[0].toString().toLowerCase()),
+        is_HOD:
+          HOD.toString().toLowerCase() === accounts[0].toString().toLowerCase(),
         is_HOD_set: isHODSet,
         state: state.toNumber(),
-        hold_state:heldState.toNumber(),
+        hold_state: heldState.toNumber()
       };
 
       companies.push(item);
     }
 
-    this.setState({company_list: companies})
-  }
+    this.setState({ company_list: companies });
+  };
 
+  // handles search bar values
   handleSearchValue(event) {
-    this.setState({search: event.target.value});
+    this.setState({ search: event.target.value });
   }
-
 
   render() {
     if (!this.state.web3) {
-      return <div className="d-flex justify-content-center">
-        <span className="badge m-2 badge-warning">Loading Web3, accounts, and contracts...</span>
-      </div>;
+      return (
+        <div className="d-flex justify-content-center">
+          <span className="badge m-2 badge-warning">
+            Loading Web3, accounts, and contracts...
+          </span>
+        </div>
+      );
     }
 
     return (
       <React.Fragment>
         <div className="jumbotron">
           <h2 className="text-center">Hello, {this.state.accounts[0]}</h2>
-          <h3 className="text-center">You have {this.state.tokens} <img src={require("./kai.png")} className="kaicoin"/>&nbsp;KAI Tokens <button className="btn btn-primary" onClick={this.handleClaim}>Claim</button></h3>
-          <h3 className="text-center">Your rank is currently at level {this.state.rank}</h3>
+          <h3 className="text-center">
+            You have {this.state.tokens}{" "}
+            <img src={require("./kai.png")} className="kaicoin" />
+            &nbsp;KAI Tokens{" "}
+            <button className="btn btn-primary" onClick={this.handleClaim}>
+              Claim
+            </button>
+          </h3>
+          <h3 className="text-center">
+            Your rank is currently at level {this.state.rank}
+          </h3>
         </div>
         <div className="container">
-        <div className="row">
+          <div className="row">
+            <div className="col-sm">
+              <h1>User Panel</h1>
+              {!this.state.isOwner ? null : (
+                <React.Fragment>
+                  <h1>Admin Panel</h1>
+                  <NewCompanyForm onAddCompany={this.handleAddCompany} /> <br />
+                  <AdminPanel
+                    onMintKAI={this.handleMintKAI}
+                    onBurnKAI={this.handleBurnKAI}
+                    onChangeRank={this.handleChangeRank}
+                    onStealKAI={this.handleStealKAI}
+                    onSendKAI={this.handleSendKAI}
+                    onSetAdmin={this.handleChangeAdmin}
+                    onSetHOD={this.handleSetHOD}
+                  />
+                </React.Fragment>
+              )}
+            </div>
 
-
-        <div className="col-sm">
-          <h1>User Panel</h1>
-          {!this.state.isOwner ? 
-          (null) : 
-          (<React.Fragment>
-            <h1>Admin Panel</h1>
-            <NewCompanyForm onAddCompany={this.handleAddCompany} /> <br/>
-            <AdminPanel 
-            onMintKAI={this.handleMintKAI} 
-            onBurnKAI={this.handleBurnKAI} 
-            onChangeRank={this.handleChangeRank} 
-            onStealKAI={this.handleStealKAI} 
-            onSendKAI={this.handleSendKAI}
-            onSetAdmin={this.handleChangeAdmin}
-            onSetHOD={this.handleSetHOD}/>
-          </React.Fragment>)}
-        </div>
-
-
-        <div className="col-sm-6">
-          <h1>Companies</h1>
-          <br/>
-          <div className="form-group">
-            <input type="text" className="form-control" value={this.state.search} onChange={this.handleSearchValue} placeholder="Search for a company"/>
+            <div className="col-sm-6">
+              <h1>Companies</h1>
+              <br />
+              <div className="form-group">
+                <input
+                  type="text"
+                  className="form-control"
+                  value={this.state.search}
+                  onChange={this.handleSearchValue}
+                  placeholder="Search for a company"
+                />
+              </div>
+              <Panels
+                companies={this.state.company_list}
+                search={this.state.search}
+                onNext={this.handleNextStage}
+                onAddConviction={this.handleAddConviction}
+                onAddTeam={this.handleAddTeam}
+                onAddnConviction={this.handleAddnConviction}
+                onHold={this.handleHold}
+                onunHold={this.handleunHold}
+                onSetHOD={this.handleSetHOD}
+              />
+            </div>
           </div>
-          <Panels 
-          companies={this.state.company_list} 
-          search={this.state.search}
-          onNext={this.handleNextStage} 
-          onAddConviction={this.handleAddConviction} 
-          onAddTeam={this.handleAddTeam}
-          onAddnConviction={this.handleAddnConviction}
-          onHold={this.handleHold}
-          onunHold={this.handleunHold}
-          onSetHOD={this.handleSetHOD}/>
-        </div>
-        </div>
-          
         </div>
       </React.Fragment>
-      
     );
   }
 }

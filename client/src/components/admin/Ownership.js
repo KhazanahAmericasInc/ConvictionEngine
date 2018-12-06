@@ -1,37 +1,46 @@
-import React, { Component } from 'react'
+import React, { Component } from "react";
 
 export default class Ownership extends Component {
+  // Ownership is the admin rights transfer panel for the admin
 
-    constructor(props) {
-        super(props);
-    
-        this.state = {address: ""};
-    
-        this.handleAddress = this.handleAddress.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-    }
+  constructor(props) {
+    super(props);
 
-    handleAddress(event) {
-        this.setState({address: event.target.value});
-    }
+    this.state = { address: "" };
 
-    handleSubmit(event) {
-        this.props.onSetAdmin(this.state.address);
-        event.preventDefault();
-    }
-    
+    this.handleAddress = this.handleAddress.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleAddress(event) {
+    this.setState({ address: event.target.value });
+  }
+
+  handleSubmit(event) {
+    this.props.onSetAdmin(this.state.address);
+    event.preventDefault();
+  }
+
   render() {
     return (
-        <React.Fragment>
+      <React.Fragment>
         <h3>Transfer Admin Rights</h3>
         <form onSubmit={this.handleSubmit}>
           <div className="form-group">
             <label>Address</label>
-            <input type="text" onChange={this.handleAddress}  className="form-control" id="intputMintLevel" placeholder="Enter new admin address"/>
+            <input
+              type="text"
+              onChange={this.handleAddress}
+              className="form-control"
+              id="intputMintLevel"
+              placeholder="Enter new admin address"
+            />
           </div>
-          <button type="submit" className="btn btn-primary">Change Admin</button>
+          <button type="submit" className="btn btn-primary">
+            Change Admin
+          </button>
         </form>
-        </React.Fragment>
-    )
+      </React.Fragment>
+    );
   }
 }
