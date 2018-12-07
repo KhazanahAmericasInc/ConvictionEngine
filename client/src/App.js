@@ -80,114 +80,115 @@ class App extends Component {
   handleMintKAI = async amount => {
     const { accounts, contract } = this.state;
     await contract.mint(amount, { from: accounts[0] });
-    this.refreshStates();
+    await this.refreshStates();
   };
 
   // Function call to smart contract to burn KAI
   handleBurnKAI = async amount => {
     const { accounts, contract } = this.state;
     await contract.burn(amount, { from: accounts[0] });
-    this.refreshStates();
+    await this.refreshStates();
   };
 
   // Function call to smart contract to change admin
   handleChangeAdmin = async address => {
     const { accounts, contract } = this.state;
     await contract.setAdmin(address, { from: accounts[0] });
-    this.refreshStates();
+    await this.refreshStates();
   };
 
   // Function call to smart contract to hold a project
   handleHold = async id => {
     const { accounts, contract } = this.state;
     await contract.hold(id, { from: accounts[0] });
-    this.refreshStates();
+    await this.refreshStates();
   };
 
   // Function call to smart contract to unhold a project
   handleunHold = async id => {
     const { accounts, contract } = this.state;
     await contract.unhold(id, { from: accounts[0] });
-    this.refreshStates();
+    await this.refreshStates();
   };
 
   // Function call to smart contract to add a team member
   handleAddTeam = async (address, id) => {
     const { accounts, contract } = this.state;
     await contract.addTeam(address, id, { from: accounts[0] });
-    this.refreshStates();
+    await this.refreshStates();
   };
 
   // Function call to smart contract to change user rank
   handleChangeRank = async (address, level) => {
     const { accounts, contract } = this.state;
     await contract.setRank(address, level, { from: accounts[0] });
-    this.refreshStates();
+    await this.refreshStates();
   };
 
   // Function call to smart contract to steak KAI tokens from another user
   handleStealKAI = async (address, amount) => {
     const { accounts, contract } = this.state;
     await contract.steal(address, amount, { from: accounts[0] });
-    this.refreshStates();
+    await this.refreshStates();
   };
 
   // Function call to smart contract to send KAI tokens to another user
   handleSendKAI = async (address, amount) => {
     const { accounts, contract } = this.state;
     await contract.transfer(address, amount, { from: accounts[0] });
-    this.refreshStates();
+    await this.refreshStates();
   };
 
   // Function call to smart contract to add a company to the pipeline
   handleAddCompany = async (amount, name) => {
     const { accounts, contract } = this.state;
     await contract.addCompany(amount, name, { from: accounts[0] });
-    this.refreshStates();
+    await this.refreshStates();
   };
 
   // Function call to smart contract to add conviction tokens to a project
   handleAddConviction = async (amount, id) => {
     const { accounts, contract } = this.state;
     await contract.addConviction(amount, id, { from: accounts[0] });
-    this.refreshStates();
+    await this.refreshStates();
   };
 
   // Function call to smart contract to add negative conviction tokens to a project
   handleAddnConviction = async (amount, id) => {
     const { accounts, contract } = this.state;
     await contract.addnConviction(amount, id, { from: accounts[0] });
-    this.refreshStates();
+    await this.refreshStates();
   };
 
   // Function call to smart contract to set HOD of a specific project
   handleSetHOD = async (address, id) => {
     const { accounts, contract } = this.state;
     await contract.setHOD(address, id, { from: accounts[0] });
-    this.refreshStates();
+    await this.refreshStates();
   };
 
   // Function call to smart contract to handle claim functionality (e.g. distributing tokens at the beginning of the yr)
   handleClaim = async () => {
     const { accounts, contract } = this.state;
     await contract.claim({ from: accounts[0] });
-    this.refreshStates();
+    await this.refreshStates();
   };
 
   // Function call to smart contract to handle moving the project stage to the next stage
   handleNextStage = async id => {
     const { accounts, contract } = this.state;
     await contract.progressStage(id, { from: accounts[0] });
-    this.refreshStates();
+    await this.refreshStates();
   };
 
   // Refreshes react state with new backend info
   refreshStates = async () => {
-    if (this.state.contract != null) {
+    const { web3, accounts, contract } = this.state;
+    if (contract != null || web3 != null || accounts != null) {
       try {
-        this.getCompanies();
-        this.getBalance();
-        this.getRank();
+        await this.getCompanies();
+        await this.getBalance();
+        await this.getRank();
       } catch (e) {
         console.log(e);
       }
