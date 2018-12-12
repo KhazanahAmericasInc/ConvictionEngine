@@ -1,6 +1,7 @@
 pragma solidity ^0.4.24;
 
 import "./KAICompany.sol";
+import "./ETF.sol";
 
 contract CEngine {
     // Mappings
@@ -10,7 +11,8 @@ contract CEngine {
     // Note: claim is a functionality that allows users to 'claim' 10,000 tokens at the beginning of the yr/instantiation
 
     KAICompany[] public companies; // The company list
-    
+    ETF public etf;
+
     uint256 public listLength; // the length of the company list
    
     uint256 id; // current id of the last added company
@@ -32,6 +34,17 @@ contract CEngine {
         listLength = 0;
         id = 0;
         contractOwner = 0xFbe6Fb5F2613f2ee6e029958A69488002BFd3221; // set admin
+
+        // create etf
+        etf = new ETF("SPX");
+    }
+
+    // addConvictionETF adds conviction to etf with (token amount: _amount)
+    function addConvictionETF(uint256 _amount) public onlyOwner returns(bool) {
+        require(balances[msg.sender] >= _amount, "Needs enough tokens.");
+        balances[msg.sender] -= _amount;
+        etf.addConviction(msg.sender,_amount);
+        return true;
     }
 
     // addCompany adds a company with (token amount: _amount, company name: _name)
@@ -99,7 +112,10 @@ contract CEngine {
         return true;
     }
 
-    // ADMIN FUNCTIONS - functions only available to the admin
+
+
+
+    ///// ADMIN FUNCTIONS - functions only available to the admin
 
     // transfer sends tokens from user to an address given (destination address: _to, token amount: _value)
     function transfer(address _to, uint256 _value) public onlyOwner returns (bool) {

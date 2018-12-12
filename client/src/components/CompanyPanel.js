@@ -28,7 +28,7 @@ export default class CompanyPanel extends Component {
   // checks whether the input is valid given a state and position (or rank to be implemented)
   validSet(onTeam, isHOD, onicTeam, state) {
     return (
-      (onTeam && (state == 0 || state == 1 || state == 4 || state == 7)) ||
+      (onTeam && (state == 0 || state == 1 || state == 4 || state == 6)) ||
       (isHOD && state == 2) ||
       (onicTeam && (state == 3 || state == 5))
     );
@@ -41,8 +41,8 @@ export default class CompanyPanel extends Component {
       1: "KAI Approval",
       2: "HOD Approval",
       3: "Intro IC1",
-      4: "KAI Approval",
-      5: "IC2",
+      4: "KAI Approval2",
+      5: "IC",
       6: "Awaiting Funds",
       7: "Waiting Exit",
       8: "Exited"
@@ -116,13 +116,13 @@ export default class CompanyPanel extends Component {
                         company.on_icTeam,
                         company.state
                       ) ? (
-                        <button
-                          className="btn btn-primary"
-                          onClick={onNext.bind(this, company.company_id)}
-                        >
-                          Next Stage
+                          <button
+                            className="btn btn-primary"
+                            onClick={onNext.bind(this, company.company_id)}
+                          >
+                            Next Stage
                         </button>
-                      ) : null}
+                        ) : null}
                       &nbsp;
                       <button
                         className="btn btn-primary"
@@ -140,39 +140,39 @@ export default class CompanyPanel extends Component {
                       company.on_icTeam,
                       company.state
                     ) ? (
-                      <div className="form-group">
-                        <label htmlFor="inputdefault">Add Conviction:</label>
-                        <input
-                          className="form-control"
-                          value={this.state.conviction_level}
-                          onChange={this.handleConvictionLevel}
-                          id="inputConviction"
-                          type="text"
-                        />
-                        <br />
-                        <button
-                          className="btn btn-primary"
-                          onClick={onAddConviction.bind(
-                            this,
-                            this.state.conviction_level,
-                            company.company_id
-                          )}
-                        >
-                          Add Conviction
+                        <div className="form-group">
+                          <label htmlFor="inputdefault">Add Conviction:</label>
+                          <input
+                            className="form-control"
+                            value={this.state.conviction_level}
+                            onChange={this.handleConvictionLevel}
+                            id="inputConviction"
+                            type="text"
+                          />
+                          <br />
+                          <button
+                            className="btn btn-primary"
+                            onClick={onAddConviction.bind(
+                              this,
+                              this.state.conviction_level,
+                              company.company_id
+                            )}
+                          >
+                            Add Conviction
                         </button>
-                        &nbsp;
+                          &nbsp;
                         <button
-                          className="btn btn-primary"
-                          onClick={onAddnConviction.bind(
-                            this,
-                            this.state.conviction_level,
-                            company.company_id
-                          )}
-                        >
-                          Add N-Conviction
+                            className="btn btn-primary"
+                            onClick={onAddnConviction.bind(
+                              this,
+                              this.state.conviction_level,
+                              company.company_id
+                            )}
+                          >
+                            Add N-Conviction
                         </button>
-                      </div>
-                    ) : null}
+                        </div>
+                      ) : null}
                   </li>
 
                   <li className="list-group-item">
@@ -202,13 +202,13 @@ export default class CompanyPanel extends Component {
                   </li>
                 </React.Fragment>
               ) : (
-                <button
-                  className="btn btn-primary"
-                  onClick={onunHold.bind(this, company.company_id)}
-                >
-                  Unhold Project
+                  <button
+                    className="btn btn-primary"
+                    onClick={onunHold.bind(this, company.company_id)}
+                  >
+                    Unhold Project
                 </button>
-              )}{" "}
+                )}{" "}
             </React.Fragment>
           ) : null}
         </ul>

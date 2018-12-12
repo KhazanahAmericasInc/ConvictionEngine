@@ -4,6 +4,8 @@ contract KAICompany {
     // Company name and address of who did BD
     bytes32 public name;
     address public initiator;
+
+    // link back to the address of CEngine
     address public contractInitiated;
 
     // mapping of addresses to booleans that holds true if a user is on IC, HOD or on bd team
@@ -82,7 +84,7 @@ contract KAICompany {
 
     // addConviction adds conviction amount with possible state restrictions given (address of sender: _from, token amount: _amount)
     function addConviction(address _from, uint256 _amount) public onlyOwner {
-        if(teamCheck[_from] && (uint(state) == 0 || uint(state) == 1 || uint(state) == 4 || uint(state) == 7)){
+        if(teamCheck[_from] && (uint(state) == 0 || uint(state) == 1 || uint(state) == 4 || uint(state) == 6)){
             convictionList[_from] += _amount;
             totalConviction += _amount;
         }else if(_from == HOD && uint(state) == 2){
@@ -98,7 +100,7 @@ contract KAICompany {
 
     // addnConviction adds negative conviction amount with possible state restrictions given (address of sender: _from, token amount: _amount)
     function addnConviction(address _from, uint256 _amount) public onlyOwner {
-        if(teamCheck[_from] && (uint(state) == 0 || uint(state) == 1 || uint(state) == 4 || uint(state) == 7)){
+        if(teamCheck[_from] && (uint(state) == 0 || uint(state) == 1 || uint(state) == 4 || uint(state) == 6)){
             convictionList[_from] += _amount;
             totalConviction += _amount;
         }else if(_from == HOD && uint(state) == 2){

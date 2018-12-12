@@ -1,11 +1,13 @@
 import React, { Component } from "react";
 import KAICompany from "./contracts/KAICompany.json";
 import CEngineContract from "./contracts/CEngine.json";
+import ETF from "./contracts/ETF.json";
 import getWeb3 from "./utils/getWeb3";
 import truffleContract from "truffle-contract";
 import NewCompanyForm from "./components/NewCompanyForm";
 import Panels from "./components/Panels";
 import AdminPanel from "./components/AdminPanel";
+import UserPanel from "./components/UserPanel";
 import "./App.css";
 
 class App extends Component {
@@ -20,7 +22,9 @@ class App extends Component {
       company_list: [],
       isOwner: false,
       rank: 0,
-      search: ""
+      search: "",
+      etf_balance: 0,
+      total_etf_balance: 0,
     };
 
     this.handleSearchValue = this.handleSearchValue.bind(this);
@@ -45,9 +49,8 @@ class App extends Component {
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
       this.setState({ web3, accounts, contract: CEInstance }, this.getBalance);
-
-      //console.log(this.state.contract);
-    } catch (error) {}
+      console.log(this.state.contract);
+    } catch (error) { }
     await this.refreshStates();
     await this.checkOwner();
   };
@@ -55,11 +58,13 @@ class App extends Component {
   // Checks whether the user is the 'admin' of the smart contracts (or isOwner)
   checkOwner = async () => {
     const { accounts, contract } = this.state;
+    console.log(contract);
     var owner = await contract.contractOwner.call();
     this.setState({
       isOwner:
         owner.toString().toLowerCase() === accounts[0].toString().toLowerCase()
     });
+    console.log(this.state.isOwner);
   };
 
   // Gets the rank of the user from the smart contracts
@@ -146,6 +151,25 @@ class App extends Component {
     await this.refreshStates();
   };
 
+  // Function call to smart contract to set HOD of a specific project
+  handleSetHOD = async (address, id) => {
+    const { accounts, contract } = this.state;
+    await contract.setHOD(address, id, { from: accounts[0] });
+    await this.refreshStates();
+  };
+
+
+  //// User Panel
+
+  // Function call to smart contract to add conviction tokens to ETF vehicle
+  handleAddConvictionETF = async (amount) => {
+    const { accounts, contract } = this.state;
+    await contract.addConvictionETF(amount, { from: accounts[0] });
+    await this.refreshStates();
+  }
+
+  //// Company Panel
+
   // Function call to smart contract to add conviction tokens to a project
   handleAddConviction = async (amount, id) => {
     const { accounts, contract } = this.state;
@@ -160,12 +184,6 @@ class App extends Component {
     await this.refreshStates();
   };
 
-  // Function call to smart contract to set HOD of a specific project
-  handleSetHOD = async (address, id) => {
-    const { accounts, contract } = this.state;
-    await contract.setHOD(address, id, { from: accounts[0] });
-    await this.refreshStates();
-  };
 
   // Function call to smart contract to handle claim functionality (e.g. distributing tokens at the beginning of the yr)
   handleClaim = async () => {
@@ -181,6 +199,8 @@ class App extends Component {
     await this.refreshStates();
   };
 
+
+
   // Refreshes react state with new backend info
   refreshStates = async () => {
     const { web3, accounts, contract } = this.state;
@@ -189,11 +209,23 @@ class App extends Component {
         await this.getCompanies();
         await this.getBalance();
         await this.getRank();
+        await this.getETF();
       } catch (e) {
         console.log(e);
       }
     }
   };
+
+  getETF = async () => {
+    const { web3, accounts, contract } = this.state;
+    var nres = await contract.etf.call();
+    const co = truffleContract(ETF);
+    co.setProvider(web3.currentProvider);
+
+    var etfBal = await co.at(nres).convictionList.call(accounts[0]);
+    var totaletfBal = await co.at(nres).totalConviction.call();
+    this.setState({ etf_balance: etfBal.toNumber(), total_etf_balance: totaletfBal.toNumber() });
+  }
 
   // retreives all company information
   getCompanies = async () => {
@@ -245,6 +277,7 @@ class App extends Component {
       };
 
       companies.push(item);
+
     }
 
     this.setState({ company_list: companies });
@@ -286,6 +319,7 @@ class App extends Component {
           <div className="row">
             <div className="col-sm">
               <h1>User Panel</h1>
+              <UserPanel onAddConvictionETF={this.handleAddConvictionETF} etfBalance={this.state.etf_balance} totalETFBalance={this.state.total_etf_balance} />
               {!this.state.isOwner ? null : (
                 <React.Fragment>
                   <h1>Admin Panel</h1>
