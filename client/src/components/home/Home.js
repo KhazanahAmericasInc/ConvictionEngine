@@ -11,6 +11,7 @@ import UserPanel from "./UserPanel";
 import "../../App.css";
 
 class Home extends Component {
+  // This is the component for the '/' page
   constructor(props) {
     super(props);
 
