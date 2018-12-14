@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 
 export default class ETF extends Component {
+    // The ETF component is the component which shows the user their contribution to the ETF pool
     constructor(props) {
         super(props);
 
