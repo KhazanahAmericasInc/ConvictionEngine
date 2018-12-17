@@ -110,12 +110,12 @@ export default class CompanyPanel extends Component {
                   <li className="list-group-item">
                     <label>Actions Available:</label>
                     <div className="form-group">
-                      {this.validSet(
+                      {(this.validSet(
                         company.on_team,
                         company.is_HOD,
                         company.on_icTeam,
                         company.state
-                      ) ? (
+                      ) && company.user_kai > 0) ? (
                           <button
                             className="btn btn-primary"
                             onClick={onNext.bind(this, company.company_id)}

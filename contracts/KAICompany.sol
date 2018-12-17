@@ -140,7 +140,7 @@ contract KAICompany {
     // nextStage progresses the stage given state restrictions (address of sender: _from)
     function nextStage(address _from) public onlyOwner{
         require(uint(state) < uint(States.EXIT), "Company already at exit state.");
-        
+        require(convictionList[_from] - nconvictionList[_from] > 0, "Moving the stage requires atleast one coin.");
         if(teamCheck[_from] && (uint(state) == 0 || uint(state) == 1 || uint(state) == 4 || uint(state) == 7)){
             state = States(uint(state) + 1);
         }else if(_from == HOD && uint(state) == 2) {

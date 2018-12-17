@@ -26,6 +26,7 @@ contract ETF {
         name = _name;
     }
 
+     // addConviction adds conviction amount with possible state restrictions given (address of sender: _from, token amount: _amount)
     function addConviction(address _from, uint256 _amount) public onlyOwner returns (bool){
         convictionList[_from] += _amount;
         totalConviction += _amount;

@@ -27,7 +27,7 @@ contract CEngine {
 
         _; // continue executing rest of method body
     }
-
+    
     // constructor for the conviction engine
     constructor(uint256 _initialSupply) public {
         balances[msg.sender] = _initialSupply;
