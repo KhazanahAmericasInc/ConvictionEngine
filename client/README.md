@@ -4,7 +4,12 @@ This is the front-end (client) part of the Conviction Engine project.
 Note: Create-react-app gives development warnings that show up only in development. These show up because of the way react works with web3, and the way that async is currently used (instead of promises). These warnings can be skipped by pressing the 'x' at the top right of the overlay and/or pressing the esc button. There should be quite a few of these warnings upon the refresh of the page (~17). They can be fixed by either removing the warning script from the create-react-app modules and/or using only promises instead of async calls.
 
 ## Quickstart
-Please see the project README for pre-requisite dependencies.
+Please see the project root README for pre-requisite dependencies.
+
+For the following commands, they must be run in /client/ , in other words, use the following command in project root.
+```
+cd client
+```
 
 Install node dependencies:
 ```
