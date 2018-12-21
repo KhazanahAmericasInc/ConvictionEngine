@@ -16,7 +16,13 @@ To set-up a test and local Ethereum blockchain, use the following command in the
 ```
 $truffle develop
 ```
-Wallet private-keys can be viewed in the console after the above command. Smart contracts in the "/contracts" folder can also be compiled and deployed using the following commands once in the truffle develop command line interface.
+Wallet private-keys can be viewed in the console after the above command. The private keys can be used to import their respective account to metamask. Smart contracts in the "/contracts" folder can also be compiled and deployed using the following commands once in the truffle develop command line interface.
+
+If there are any errors in running truffle develop (node versioning error), please install the latest version of node:
+```
+$npm install -g n
+$n latest
+```
 
 #### Editor for Smart Contracts
 The Ethereum smart contracts are developed in Solidity. Solidity documentation is located [here](https://solidity.readthedocs.io/en/v0.4.25/).
@@ -51,6 +57,8 @@ $compile
 ```
 $migrate --network rinkebyInfura
 ```
+
+Note: other available networks are: ethereumInfura (mainnet); ropstenInfura; kovanInfura
 
 ### Part 2: Front-end
 Please navigate to "/client" on Github for more info (please see the /client/README.md) located at the bottom of the page [here](https://github.com/KhazanahAmericasInc/ConvictionEngine/tree/master/client).
