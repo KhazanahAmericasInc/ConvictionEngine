@@ -20,6 +20,20 @@ Install node dependencies:
 $npm install
 ```
 
+Note: If the above command creates any errors, try running:
+```
+$npm start
+```
+and manually install the missing dependencies using
+```
+$npm install <dependency>
+```
+
+Install Firebase-tools:
+```
+$npm install firebase-tools
+```
+
 Start development server:
 
 ```
