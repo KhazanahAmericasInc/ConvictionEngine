@@ -25,7 +25,7 @@ class Home extends Component {
       rank: 0,
       search: "",
       etf_balance: 0,
-      total_etf_balance: 0,
+      total_etf_balance: 0
     };
 
     this.handleSearchValue = this.handleSearchValue.bind(this);
@@ -51,7 +51,7 @@ class Home extends Component {
       // example of interacting with the contract's methods.
       this.setState({ web3, accounts, contract: CEInstance }, this.getBalance);
       console.log(this.state.contract);
-    } catch (error) { }
+    } catch (error) {}
     await this.refreshStates();
     await this.checkOwner();
   };
@@ -60,10 +60,9 @@ class Home extends Component {
   checkOwner = async () => {
     const { accounts, contract } = this.state;
     console.log(contract);
-    var owner = await contract.contractOwner.call();
+    var owner = await contract.contractOwner.call(accounts[0]);
     this.setState({
-      isOwner:
-        owner.toString().toLowerCase() === accounts[0].toString().toLowerCase()
+      isOwner: owner
     });
     console.log(this.state.isOwner);
   };
@@ -96,10 +95,17 @@ class Home extends Component {
     await this.refreshStates();
   };
 
-  // Function call to smart contract to change admin
-  handleChangeAdmin = async address => {
+  // Function call to smart contract to set admin
+  handleSetAdmin = async address => {
     const { accounts, contract } = this.state;
     await contract.setAdmin(address, { from: accounts[0] });
+    await this.refreshStates();
+  };
+
+  // Function call to smart contract to remove admin rights of a user
+  handleUnsetAdmin = async address => {
+    const { accounts, contract } = this.state;
+    await contract.unsetAdmin(address, { from: accounts[0] });
     await this.refreshStates();
   };
 
@@ -159,15 +165,14 @@ class Home extends Component {
     await this.refreshStates();
   };
 
-
   //// User Panel
 
   // Function call to smart contract to add conviction tokens to ETF vehicle
-  handleAddConvictionETF = async (amount) => {
+  handleAddConvictionETF = async amount => {
     const { accounts, contract } = this.state;
     await contract.addConvictionETF(amount, { from: accounts[0] });
     await this.refreshStates();
-  }
+  };
 
   //// Company Panel
 
@@ -185,7 +190,6 @@ class Home extends Component {
     await this.refreshStates();
   };
 
-
   // Function call to smart contract to handle claim functionality (e.g. distributing tokens at the beginning of the yr)
   handleClaim = async () => {
     const { accounts, contract } = this.state;
@@ -199,8 +203,6 @@ class Home extends Component {
     await contract.progressStage(id, { from: accounts[0] });
     await this.refreshStates();
   };
-
-
 
   // Refreshes react state with new backend info
   refreshStates = async () => {
@@ -226,8 +228,11 @@ class Home extends Component {
 
     var etfBal = await co.at(nres).convictionList.call(accounts[0]);
     var totaletfBal = await co.at(nres).totalConviction.call();
-    this.setState({ etf_balance: etfBal.toNumber(), total_etf_balance: totaletfBal.toNumber() });
-  }
+    this.setState({
+      etf_balance: etfBal.toNumber(),
+      total_etf_balance: totaletfBal.toNumber()
+    });
+  };
 
   // retreives all company information
   getCompanies = async () => {
@@ -279,7 +284,6 @@ class Home extends Component {
       };
 
       companies.push(item);
-
     }
 
     this.setState({ company_list: companies });
@@ -321,7 +325,11 @@ class Home extends Component {
           <div className="row">
             <div className="col-sm">
               <h1>User Panel</h1>
-              <UserPanel onAddConvictionETF={this.handleAddConvictionETF} etfBalance={this.state.etf_balance} totalETFBalance={this.state.total_etf_balance} />
+              <UserPanel
+                onAddConvictionETF={this.handleAddConvictionETF}
+                etfBalance={this.state.etf_balance}
+                totalETFBalance={this.state.total_etf_balance}
+              />
               {!this.state.isOwner ? null : (
                 <React.Fragment>
                   <h1>Admin Panel</h1>
@@ -332,7 +340,8 @@ class Home extends Component {
                     onChangeRank={this.handleChangeRank}
                     onStealKAI={this.handleStealKAI}
                     onSendKAI={this.handleSendKAI}
-                    onSetAdmin={this.handleChangeAdmin}
+                    onSetAdmin={this.handleSetAdmin}
+                    onUnsetAdmin={this.handleUnsetAdmin}
                     onSetHOD={this.handleSetHOD}
                   />
                 </React.Fragment>

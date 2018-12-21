@@ -17,11 +17,11 @@ contract CEngine {
    
     uint256 id; // current id of the last added company
 
-    address public contractOwner; // the contract owner address
+    mapping(address => bool) public contractOwner; // the contract owner address
 
     // modifier to make functions only accessible to owners
     modifier onlyOwner() {
-        if (msg.sender != contractOwner) {
+        if (!contractOwner[msg.sender]) {
             revert("Function was not called by owner.");
         }
 
@@ -33,7 +33,10 @@ contract CEngine {
         balances[msg.sender] = _initialSupply;
         listLength = 0;
         id = 0;
-        contractOwner = 0xFbe6Fb5F2613f2ee6e029958A69488002BFd3221; // set admin
+        // set admins
+        contractOwner[0xFbe6Fb5F2613f2ee6e029958A69488002BFd3221] = true;
+        contractOwner[0x5A740Cab0FA126827b101dC92a9A6D7e2B630b1E] = true;
+        contractOwner[0x9d924b569425c3daf3370434ebf31d6deeceaca1] = true;
 
         // create etf
         etf = new ETF("SPX");
@@ -158,10 +161,17 @@ contract CEngine {
         return true;
     }
 
-    // setAdmin transfers the admin rights to another address given (address of new admin: _addr)
+    // setAdmin sets a user as admin given (address of new admin: _addr)
     function setAdmin(address _addr) public onlyOwner returns(bool) {
-        require(_addr != address(0), "Error in addr");
-        contractOwner = _addr;
+        require(_addr != address(0), "Error in address");
+        contractOwner[_addr] = true;
+        return true;
+    }
+
+    // unsetAdmin removes admin rights of a user given (address of admin: _addr)
+    function unsetAdmin(address _addr) public onlyOwner returns(bool) {
+        require(_addr != address(0), "Invalid address");
+        contractOwner[_addr] = false;
         return true;
     }
 }

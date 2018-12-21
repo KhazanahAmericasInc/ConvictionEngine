@@ -4,8 +4,9 @@ import Burn from "./admin/Burn";
 import Rank from "./admin/Rank";
 import Send from "./admin/Send";
 import Steal from "./admin/Steal";
-import Ownership from "./admin/Ownership";
 import SetHOD from "./admin/SetHOD";
+import SetAdmin from "./admin/SetAdmin";
+import UnsetAdmin from "./admin/UnsetAdmin";
 
 export default class AdminPanel extends Component {
   // The AdminPanel is the component which contains all of the admin controls.
@@ -18,6 +19,7 @@ export default class AdminPanel extends Component {
       onStealKAI,
       onSendKAI,
       onSetAdmin,
+      onUnsetAdmin,
       onSetHOD
     } = this.props;
 
@@ -36,7 +38,10 @@ export default class AdminPanel extends Component {
           <br />
           <Burn onBurnKAI={onBurnKAI} />
           <br />
-          <Ownership onSetAdmin={onSetAdmin} />
+          <SetAdmin onSetAdmin={onSetAdmin} />
+          <br />
+          <UnsetAdmin onUnsetAdmin={onUnsetAdmin} />
+          <br />
         </div>
       </div>
     );

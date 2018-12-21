@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 
-export default class Ownership extends Component {
-  // Ownership is the admin rights transfer panel for the admin
+export default class UnsetAdmin extends Component {
+  // SetAdmin is the add a admin panel for the admin
 
   constructor(props) {
     super(props);
@@ -17,14 +17,14 @@ export default class Ownership extends Component {
   }
 
   handleSubmit(event) {
-    this.props.onSetAdmin(this.state.address);
+    this.props.onUnsetAdmin(this.state.address);
     event.preventDefault();
   }
 
   render() {
     return (
       <React.Fragment>
-        <h3>Transfer Admin Rights</h3>
+        <h3>Remove Admin</h3>
         <form onSubmit={this.handleSubmit}>
           <div className="form-group">
             <label>Address</label>
@@ -37,7 +37,7 @@ export default class Ownership extends Component {
             />
           </div>
           <button type="submit" className="btn btn-primary">
-            Change Admin
+            Remove Admin
           </button>
         </form>
       </React.Fragment>
